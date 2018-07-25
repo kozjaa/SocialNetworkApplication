@@ -18,6 +18,8 @@ public class UserController {
     public String getMyProfile(Model model) {
         String currentUsername = userService.getCurrentLoggedUser().getUsername();
         User currentUser = userService.getCurrentLoggedUser();
+        model.addAttribute("user", userService.getCurrentLoggedUser());
+        model.addAttribute("friends", userService.getMyFriends());
         model.addAttribute("username", currentUsername);
         model.addAttribute("invitations", userService.getCurrentLoggedUser().getInvitations());
         model.addAttribute("newmessage", userService.getCurrentLoggedUser().getNewmessage());
@@ -27,7 +29,7 @@ public class UserController {
     @RequestMapping(value = "/user/{id}")
     public String getUserById(@PathVariable Integer id, Model model) {
         if (userService.getUserById(id).getUsername().equals(userService.getCurrentLoggedUser().getUsername())) {
-            return "redirect:/mydata";
+            return "redirect:/myprofile";
         }
         else if (userService.getMyFriends().contains(userService.getUserById(id))) {
             model.addAttribute("user", userService.getUserById(id));
@@ -53,19 +55,10 @@ public class UserController {
     @RequestMapping(value = "/user/byname/{name}")
     public String getUserByName(@PathVariable String name) {
         if (name.equals(userService.getCurrentLoggedUser().getUsername())) {
-            return "redirect:/mydata";
+            return "redirect:/myprofile";
         }
         else {
         Integer id = userService.getUserByName(name).getId();
         return "redirect:/user/" + id;}
-    }
-
-    @RequestMapping(value = "/mydata")
-    public String getMyProfileData(Model model) {
-        model.addAttribute("user", userService.getCurrentLoggedUser());
-        model.addAttribute("username", userService.getCurrentLoggedUser().getUsername());
-        model.addAttribute("invitations", userService.getCurrentLoggedUser().getInvitations());
-        model.addAttribute("newmessage", userService.getCurrentLoggedUser().getNewmessage());
-        return "myprofile";
     }
 }

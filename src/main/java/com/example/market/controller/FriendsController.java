@@ -29,7 +29,7 @@ public class FriendsController {
         current.setInvitations(current.getInvitations()-1);
         userService.updateUser(current);
 
-        return "redirect:/myfriends";
+        return "redirect:/myprofile";
     }
 
     @RequestMapping(value = "/home/addfriend/reject/{username}")
@@ -40,21 +40,12 @@ public class FriendsController {
         current.setInvitations(current.getInvitations()-1);
         userService.updateUser(current);
 
-        return "redirect:/myfriends";
+        return "redirect:/myprofile";
     }
 
     @RequestMapping(value = "/home/deletefriend/{id}")
     public String deleteFriend(@PathVariable Integer id) {
         userService.deletMyFriend(id);
-        return "redirect:/myfriends";
-    }
-
-    @RequestMapping(value = "/myfriends")
-    public String getFriendsByUserId(Model model) {
-        model.addAttribute("friends", userService.getMyFriends());
-        model.addAttribute("username", userService.getCurrentLoggedUser().getUsername());
-        model.addAttribute("invitations", userService.getCurrentLoggedUser().getInvitations());
-        model.addAttribute("newmessage", userService.getCurrentLoggedUser().getNewmessage());
-        return "myprofile";
+        return "redirect:/myprofile";
     }
 }

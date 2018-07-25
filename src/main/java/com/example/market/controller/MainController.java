@@ -92,7 +92,6 @@ public class MainController {
     public String search(Model model, @RequestParam(value = "search") String username) {
         String currentUsername = userService.getCurrentLoggedUser().getUsername();
         if(username.trim().equals("")) {
-            model.addAttribute("result", "Nie podano żadnych danych do wyszukania");
             model.addAttribute("username", currentUsername);
             model.addAttribute("invitations", userService.getCurrentLoggedUser().getInvitations());
             model.addAttribute("newmessage", userService.getCurrentLoggedUser().getNewmessage());

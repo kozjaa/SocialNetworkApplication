@@ -25,7 +25,7 @@ public class MessageController {
         String user = userService.getUserById(id).getUsername();
         String currentUsername = userService.getCurrentLoggedUser().getUsername();
         if(user.equals(currentUsername))
-        {return "redirect:/mydata";}
+        {return "redirect:/myprofile";}
         else {
             model.addAttribute("conversation", userService.getAllMessages(user));
             model.addAttribute("user", user);
