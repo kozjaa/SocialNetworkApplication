@@ -1,0 +1,114 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <style>
+.containerr {
+  border: 2px solid #ccc;
+  background-color: #eee;
+  border-radius: 5px;
+  padding: 16px;
+  margin: 16px 0
+}
+
+.containerr::after {
+  content: "";
+  clear: both;
+  display: table;
+}
+
+.containerr img {
+  float: left;
+  margin-right: 20px;
+  border-radius: 50%;
+}
+
+.containerr span {
+  font-size: 20px;
+  margin-right: 15px;
+}
+
+@media (max-width: 500px) {
+  .containerr {
+      text-align: center;
+  }
+  .containerr img {
+      margin: auto;
+      float: none;
+      display: block;
+  }
+}
+</style>
+    <title>MyWall</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+    <link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/4.1.0/css/bootstrap.min.css}">
+    <script th:src="@{/webjars/bootstrap/4.1.0/js/bootstrap.min.js}"></script>
+</head>
+<body>
+<nav class="navbar navbar-expand navbar-dark" style="background:#523c86;">
+    <a class="navbar-brand" href="/home">MyWall</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item">
+                <a class="nav-link" href="/myprofile">Moje konto</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/mymessages">Wiadomości</a>
+            </li>
+            <li class="nav-item" th:if="${newmessage > 0}">
+              <p class="badge badge-danger" th:text="${newmessage}"></p>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/invitations">Zaproszenia</a>
+            </li>
+            <li class="nav-item" th:if="${invitations > 0}">
+                <p class="badge badge-danger" th:text="${invitations}"></p>
+            </li>
+        </ul>
+        <form class="form-inline my-2 my-lg-0" th:object="${search}" th:action="@{/search}" th:method="get">
+            <input th:value="${search}" class="form-control mr-sm-2" type="search" placeholder="Szukaj" aria-label="Search" id="search" name="search">
+            <button class="btn btn-success my-2 my-sm-0" type="submit">Szukaj</button>
+        </form>
+        <ul class="nav justify-content-end">
+            <li class="nav-item">
+                <span class="nav-link disabled text-warning" th:text="'Jesteś zalogowany jako: ' + ${username}"></span>
+            </li>
+        <form action="#" th:action="@{/logout}" method="post">
+            <input class="btn btn-outline-warning" type="submit" value="Wyloguj" />
+        </form>
+        </ul>
+    </div>
+</nav>
+<p></p>
+<div class="container">
+<div class="row">
+    <div class="col-md-2">
+
+    </div>
+    <div class="col-md-8">
+    <form th:object="${post}" th:action="@{/home}" th:method="post">
+        <div class="form-group">
+            <div class="input-group mb-3">
+                <textarea type="text" th:field="*{content}" class="form-control" th:placeholder="'Cześć ' + ${username} + '! Napisz co u Ciebie słychać :)'"  aria-describedby="basic-addon2"></textarea>
+            </div>
+            <button class="btn btn-info" type="submit">Opublikuj</button>
+        </div>
+    </form>
+        <br>
+        <div class="containerr" th:each="post : ${posts}">
+            <img src="/images/avatar.jpg" alt="Avatar" style="width:90px">
+            <p><span><a th:text="${post.author}" th:href="${'/user/byname/'+ post.author}"></a></span><span class="badge badge-light" th:text="${post.date}"></span></p>
+            <p th:text="${post.content}"></p>
+        </div>
+    </div>
+    <div class="col-sm-2">
+
+    </div>
+</div>
+</div>
+</body>
+</html>
