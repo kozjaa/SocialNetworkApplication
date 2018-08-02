@@ -31,6 +31,14 @@ public class User {
 
     private Integer invitations = 0;
 
+    private Integer notification = 0;
+
+    @ElementCollection
+    private List<Integer> likedPosts;
+
+    @ElementCollection
+    private List<Integer> unlikedPosts;
+
     @Column(name = "enabled")
     private boolean enabled = true;
 
@@ -43,6 +51,9 @@ public class User {
 
     @OneToMany(mappedBy = "user")
     private List<Post> myposts;
+
+    @OneToMany(mappedBy = "user")
+    private List<Notification> notifications;
 
     @JsonIgnore
     @JoinTable(
@@ -177,5 +188,37 @@ public class User {
 
     public void setInvitations(Integer invitations) {
         this.invitations = invitations;
+    }
+
+    public List<Integer> getLikedPosts() {
+        return likedPosts;
+    }
+
+    public void setLikedPosts(List<Integer> likedPosts) {
+        this.likedPosts = likedPosts;
+    }
+
+    public List<Integer> getUnlikedPosts() {
+        return unlikedPosts;
+    }
+
+    public void setUnlikedPosts(List<Integer> unlikedPosts) {
+        this.unlikedPosts = unlikedPosts;
+    }
+
+    public List<Notification> getNotifications() {
+        return notifications;
+    }
+
+    public void setNotifications(List<Notification> notifications) {
+        this.notifications = notifications;
+    }
+
+    public Integer getNotification() {
+        return notification;
+    }
+
+    public void setNotification(Integer notification) {
+        this.notification = notification;
     }
 }

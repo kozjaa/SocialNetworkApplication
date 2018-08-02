@@ -19,6 +19,8 @@ public class Message {
 
     private String receiver;
 
+    private String date;
+
     @JsonIgnore
     @ManyToMany(mappedBy = "mymessages")
     private List<User> myusers = new ArrayList<>();
@@ -67,4 +69,11 @@ public class Message {
         this.receiver = receiver;
     }
 
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
+    }
 }

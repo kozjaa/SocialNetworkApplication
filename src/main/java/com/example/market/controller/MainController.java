@@ -1,8 +1,10 @@
 package com.example.market.controller;
 
 
+import com.example.market.model.Notification;
 import com.example.market.model.Post;
 import com.example.market.model.User;
+import com.example.market.service.NotificationService;
 import com.example.market.service.PostService;
 import com.example.market.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +27,9 @@ public class MainController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private NotificationService notificationService;
+
     @RequestMapping(value = "/register")
     public String registerUser(Model model) {
         model.addAttribute("user", new User());
@@ -42,12 +47,10 @@ public class MainController {
             bindingResult.getAllErrors().forEach(error -> {
                 System.out.println(error.getObjectName() + " " + error.getDefaultMessage());
             });
-            return "registerform";
-        }
+            return "registerform"; }
         else {
             userService.saveUser(user);
-            return "redirect:/login";
-        }
+            return "redirect:/login"; }
     }
 
     @RequestMapping(value = "/login")
@@ -58,69 +61,99 @@ public class MainController {
     @RequestMapping(value = "/home")
     public String home(Model model) {
         User currentUser = userService.getCurrentLoggedUser();
-        List<Post> allMesages = postService.getAllPosts();
+        List<Post> myAllPosts = postService.getMyAllPosts();
         Integer currentUserId = currentUser.getId();
         String currentUsername = currentUser.getUsername();
-        List<String> requestFriendsUsers = userService.getAllFriendsRequests();
-
-        model.addAttribute("invitations", currentUser.getInvitations());
-        model.addAttribute("newmessage", currentUser.getNewmessage());
+        List<String> requestFriendsUsersnames = userService.getAllFriendsRequests();
+        Integer myNumberOfFriendsInvitations = currentUser.getInvitations();
+        Integer myNumberOfNewMessages = currentUser.getNewmessage();
+        Integer myNumberOfNotifications = currentUser.getNotification();
+        model.addAttribute("invitations", myNumberOfFriendsInvitations);
+        model.addAttribute("newmessage", myNumberOfNewMessages);
         model.addAttribute("id", currentUserId);
-        model.addAttribute("posts", allMesages);
+        model.addAttribute("posts", myAllPosts);
         model.addAttribute("post", new Post());
         model.addAttribute("username", currentUsername);
-        model.addAttribute("users", requestFriendsUsers);
-
+        model.addAttribute("users", requestFriendsUsersnames);
+        model.addAttribute("notifications", myNumberOfNotifications);
         return "index";
     }
 
     @RequestMapping(value = "/home", method = RequestMethod.POST)
     public String addMessage(@Valid Post post, BindingResult bindingResult) {
-
-        if(bindingResult.hasErrors())
-        {
+        if(bindingResult.hasErrors()) {
             bindingResult.getAllErrors().forEach(error ->{
                 System.out.println(error.getObjectName() + " " + error.getDefaultMessage());
             });
             return "redirect:/home";}
             else {
-        postService.savePost(post);
-        return "redirect:/home";}
+            postService.savePost(post);
+            return "redirect:/home";}
     }
 
     @RequestMapping(value = "/search", method = RequestMethod.GET)
     public String search(Model model, @RequestParam(value = "search") String username) {
         String currentUsername = userService.getCurrentLoggedUser().getUsername();
+        User currentUser = userService.getCurrentLoggedUser();
+        Integer myNumberOfFriendsInvitations = currentUser.getInvitations();
+        Integer myNumberOfNewMessages = currentUser.getNewmessage();
+        Integer myNumberOfNotifications = currentUser.getNotification();
+        List<User> allUsers = userService.getAllUsers();
+        User searchedUser = userService.getUserByName(username.trim());
         if(username.trim().equals("")) {
             model.addAttribute("username", currentUsername);
-            model.addAttribute("invitations", userService.getCurrentLoggedUser().getInvitations());
-            model.addAttribute("newmessage", userService.getCurrentLoggedUser().getNewmessage());
-            return "nouser";
-        }
-        else if (!userService.getAllUsers().contains(userService.getUserByName(username.trim()))){
+            model.addAttribute("invitations", myNumberOfFriendsInvitations);
+            model.addAttribute("newmessage", myNumberOfNewMessages);
+            model.addAttribute("notifications", myNumberOfNotifications);
+            return "nouser"; }
+        else if (!allUsers.contains(searchedUser)){
             model.addAttribute("user", username);
             model.addAttribute("username", currentUsername);
-            model.addAttribute("invitations", userService.getCurrentLoggedUser().getInvitations());
-            model.addAttribute("newmessage", userService.getCurrentLoggedUser().getNewmessage());
-
-            return "nouser";
-        }
+            model.addAttribute("invitations", myNumberOfFriendsInvitations);
+            model.addAttribute("newmessage", myNumberOfNewMessages);
+            model.addAttribute("notifications", myNumberOfNotifications);
+            return "nouser"; }
         else {
-            User user = userService.getUserByName(username.trim());
-            model.addAttribute("user", user);
+            model.addAttribute("user", searchedUser);
             model.addAttribute("username", currentUsername);
-            model.addAttribute("invitations", userService.getCurrentLoggedUser().getInvitations());
-            model.addAttribute("newmessage", userService.getCurrentLoggedUser().getNewmessage());
+            model.addAttribute("invitations", myNumberOfFriendsInvitations);
+            model.addAttribute("newmessage", myNumberOfNewMessages);
+            model.addAttribute("notifications", myNumberOfNotifications);
             return "searchresult";}
     }
 
     @RequestMapping(value = "/invitations")
     public String getInvitations(Model model) {
-        model.addAttribute("users", userService.getAllFriendsRequests());
-        model.addAttribute("username", userService.getCurrentLoggedUser().getUsername());
-        model.addAttribute("invitations", userService.getCurrentLoggedUser().getInvitations());
-        model.addAttribute("newmessage", userService.getCurrentLoggedUser().getNewmessage());
+        User currentUser = userService.getCurrentLoggedUser();
+        String currentUserUsername = currentUser.getUsername();
+        List<String> myFriendsRequests = userService.getAllFriendsRequests();
+        Integer myNumberOfFriendsInvitations = currentUser.getInvitations();
+        Integer myNumberOfNewMessages = currentUser.getNewmessage();
+        Integer myNumberOfNotifications = currentUser.getNotification();
+        model.addAttribute("users", myFriendsRequests);
+        model.addAttribute("username", currentUserUsername);
+        model.addAttribute("invitations", myNumberOfFriendsInvitations);
+        model.addAttribute("newmessage", myNumberOfNewMessages);
+        model.addAttribute("notifications", myNumberOfNotifications);
         return "invitations";
+    }
+
+    @RequestMapping(value = "/notifications")
+    public String getNotifications(Model model) {
+        User currentUser = userService.getCurrentLoggedUser();
+        String currentUserUsername = currentUser.getUsername();
+        currentUser.setNotification(0);
+        userService.updateUser(currentUser);
+        Integer myNumberOfFriendsInvitations = currentUser.getInvitations();
+        Integer myNumberOfNewMessages = currentUser.getNewmessage();
+        Integer myNumberOfNotifications = currentUser.getNotification();
+        List<Notification> myNotifications = notificationService.getMyNotifications();
+        model.addAttribute("username", currentUserUsername);
+        model.addAttribute("invitations", myNumberOfFriendsInvitations);
+        model.addAttribute("newmessage", myNumberOfNewMessages);
+        model.addAttribute("notification", myNumberOfNotifications);
+        model.addAttribute("notifications", myNotifications);
+        return "notifications";
     }
 
 }

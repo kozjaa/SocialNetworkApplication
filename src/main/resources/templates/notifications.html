@@ -4,7 +4,7 @@
     <title>MyWall</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css" integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ" crossorigin="anonymous">
-    <link rel="stylesheet" type="text/css" th:href="@{/webjars/bootstrap/4.1.0/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/webjars/bootstrap/4.1.0/css/bootstrap.min.css}" />
     <link rel="stylesheet" type="text/css" href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css">
     <script th:src="@{/webjars/bootstrap/4.1.0/js/bootstrap.min.js}"></script>
     <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
@@ -36,8 +36,8 @@
             <li class="nav-item">
                 <a class="nav-link" href="/notifications"><i class="fas fa-bell"></i></a>
             </li>
-            <li class="nav-item" th:if="${notifications > 0}">
-                <p class="badge badge-danger" th:text="${notifications}"></p>
+            <li class="nav-item" th:if="${notification > 0}">
+                <p class="badge badge-danger" th:text="${notification}"></p>
             </li>
         </ul>
         <form class="form-inline my-2 my-lg-0" th:object="${search}" th:action="@{/search}" th:method="get">
@@ -58,19 +58,12 @@
 <div class="container">
     <div class="row">
         <div class="col-md-10">
-            <h3>Zaproszenia do znajomych</h3>
-            <ul class="list-unstyled" th:each="user : ${users}">
-             <li><div class="chip">
-                <img src="/images/man.png" alt="Person" width="96" height="96">
-                <a th:href="${'/user/byname/'+ user}"><span th:text="${user}"></span></a>
+            <div class="alert alert-info" th:each="note : ${notifications}">
+                <a th:href="${'/user/byname/'+ note.author}"><strong th:text="${note.author}"></strong></a><span th:text="${note.content}"></span><a href="/myprofile" class="alert-link" th:text="${note.post}"></a>.
             </div>
-                 <a th:href="${'/home/addfriend/accept/'+ user}" class="btn btn-primary btn-sm">Akceptuj</a>
-                 <a th:href="${'/home/addfriend/reject/'+ user}" class="btn btn-danger btn-sm">Odrzuć</a>
-             </li>
-            </ul>
         </div>
         <div class="col-md-2">
-            
+
         </div>
     </div>
 </div>

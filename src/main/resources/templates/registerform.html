@@ -1,6 +1,64 @@
 <!DOCTYPE HTML>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
+    <style>
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: black;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+.container {
+    padding: 16px;
+    background-color: white;
+}
+
+input[type=text], input[type=password] {
+    width: 100%;
+    padding: 15px;
+    margin: 5px 0 22px 0;
+    display: inline-block;
+    border: none;
+    background: #f1f1f1;
+}
+
+input[type=text]:focus, input[type=password]:focus {
+    background-color: #ddd;
+    outline: none;
+}
+
+hr {
+    border: 1px solid #f1f1f1;
+    margin-bottom: 25px;
+}
+
+.registerbtn {
+    background-color: #523c86;
+    color: white;
+    padding: 16px 20px;
+    margin: 8px 0;
+    border: none;
+    cursor: pointer;
+    width: 100%;
+    opacity: 0.9;
+}
+
+.registerbtn:hover {
+    opacity: 1;
+}
+
+a {
+    color: dodgerblue;
+}
+
+.signin {
+    background-color: #f1f1f1;
+    text-align: center;
+}
+</style>
     <title>MyWall</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 
@@ -9,38 +67,31 @@
 </head>
 <body>
 <div class="container">
-    <div class="jumbotron">
-        <h1>Rejestracja</h1>
-        <p>Wypełnij poprawnie formularz rejestracji i zapamiętaj dane, gdyż będziesz ich później potrzebować do zalogowania!</p>
-        <p>Jeśli już posiadasz konto, wróć do formularza logowania klikając poniżej</p>
-        <p><a class="btn btn-outline-success" href="/login">Wróć</a></p>
-    </div>
     <form th:action="@{/register}" th:object="${user}" th:method="post">
-        <div class="input-group mb-3">
-            <div class="input-group-prepend">
-                <span class="input-group-message">Nazwa użytkownika</span>
-            </div>
-            <input type="text" class="form-control" th:field="*{username}" aria-label="Default">
+        <div class="container">
+            <h1>Zarejestruj się</h1>
+            <p>Wypełnij formularz, aby utworzyć konto.</p>
+            <hr>
+
+            <label><b>Nazwa</b></label>
+            <input type="text" placeholder="Wpisz nazwę" name="name" required th:field="*{username}">
+
+            <label><b>Email</b></label>
+            <input type="text" placeholder="Wpisz Email" name="email" required th:field="*{email}">
+
+            <label><b>Hasło</b></label>
+            <input type="password" placeholder="Wpisz hasło" name="psw" required th:field="*{password}">
+
+            <label><b>Powtórz hasło</b></label>
+            <input type="password" placeholder="Powtórz hasło" name="psw-repeat" required th:field="*{repeatedPassword}">
+            <hr>
+
+            <button type="submit" class="registerbtn">Zarejestruj</button>
         </div>
-        <div class="input-group mb-3">
-            <div class="input-group-prepend">
-                <span class="input-group-message">E-mail</span>
-            </div>
-            <input type="text" class="form-control" th:field="*{email}" aria-label="Default">
+
+        <div class="container signin">
+            <p>Posiadasz już konto?  <a href="/login">Zaloguj się</a>.</p>
         </div>
-        <div class="input-group mb-3">
-            <div class="input-group-prepend">
-                <span class="input-group-message">Hasło</span>
-            </div>
-            <input type="password" class="form-control" th:field="*{password}" aria-label="Default">
-        </div>
-        <div class="input-group mb-3">
-            <div class="input-group-prepend">
-                <span class="input-group-message">Hasło</span>
-            </div>
-            <input type="password" placeholder="Powtórz hasło" class="form-control" th:field="*{repeatedPassword}" aria-label="Default">
-        </div>
-        <div class="btn-group"><button type="submit" class="btn btn-outline-primary">Zarejestruj się</button></div>
     </form>
 </div>
 </body>

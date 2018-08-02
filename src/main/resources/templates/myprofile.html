@@ -2,32 +2,122 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <style>
-.chip {
-    display: inline-block;
-    padding: 0 25px;
-    height: 50px;
-    font-size: 16px;
-    line-height: 50px;
-    border-radius: 25px;
-    background-color: #f1f1f1;
+
+.panel-shadow {
+    box-shadow: rgba(0, 0, 0, 0.3) 7px 7px 7px;
+}
+.panel-white {
+  border: 1px solid #dddddd;
+}
+.panel-white  .panel-heading {
+  color: #333;
+  background-color: #fff;
+  border-color: #ddd;
+}
+.panel-white  .panel-footer {
+  background-color: #fff;
+  border-color: #ddd;
 }
 
-.chip img {
-    float: left;
-    margin: 0 10px 0 -25px;
-    height: 50px;
-    width: 50px;
-    border-radius: 50%;
+.post .post-heading {
+  height: 95px;
+  padding: 20px 15px;
 }
+.post .post-heading .avatar {
+  width: 60px;
+  height: 60px;
+  display: block;
+  margin-right: 15px;
+}
+.post .post-heading .meta .title {
+  margin-bottom: 0;
+}
+.post .post-heading .meta .title a {
+  color: black;
+}
+.post .post-heading .meta .title a:hover {
+  color: #aaaaaa;
+}
+.post .post-heading .meta .time {
+  margin-top: 8px;
+  color: #999;
+}
+.post .post-image .image {
+  width: 100%;
+  height: auto;
+}
+.post .post-description {
+  padding: 15px;
+}
+.post .post-description p {
+  font-size: 14px;
+}
+.post .post-description .stats {
+  margin-top: 20px;
+}
+.post .post-description .stats .stat-item {
+  display: inline-block;
+  margin-right: 15px;
+}
+.post .post-description .stats .stat-item .icon {
+  margin-right: 8px;
+}
+.post .post-footer {
+  border-top: 1px solid #ddd;
+  padding: 15px;
+}
+.post .post-footer .input-group-addon a {
+  color: #454545;
+}
+.post .post-footer .comments-list {
+  padding: 0;
+  margin-top: 20px;
+  list-style-type: none;
+}
+.post .post-footer .comments-list .comment {
+  display: block;
+  width: 100%;
+  margin: 20px 0;
+}
+.post .post-footer .comments-list .comment .avatar {
+  width: 35px;
+  height: 35px;
+}
+.post .post-footer .comments-list .comment .comment-heading {
+  display: block;
+  width: 100%;
+}
+.post .post-footer .comments-list .comment .comment-heading .user {
+  font-size: 14px;
+  font-weight: bold;
+  display: inline;
+  margin-top: 0;
+  margin-right: 10px;
+}
+.post .post-footer .comments-list .comment .comment-heading .time {
+  font-size: 12px;
+  color: #aaa;
+  margin-top: 0;
+  display: inline;
+}
+.post .post-footer .comments-list .comment .comment-body {
+  margin-left: 50px;
+}
+.post .post-footer .comments-list .comment > .comments-list {
+  margin-left: 50px;
+}
+
 </style>
     <title>MyWall</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css" integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ" crossorigin="anonymous">
     <link rel="stylesheet" th:href="@{/webjars/bootstrap/4.1.0/css/bootstrap.min.css}" />
+    <link rel="stylesheet" type="text/css" href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css">
     <script th:src="@{/webjars/bootstrap/4.1.0/js/bootstrap.min.js}"></script>
+    <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
 </head>
 <body>
-<nav class="navbar navbar-expand navbar-dark" style="background:#523c86;">
+<nav class="navbar sticky-top navbar-expand navbar-dark" style="background:#523c86;">
     <a class="navbar-brand" href="/home">MyWall</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
             aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -39,16 +129,22 @@
                 <a class="nav-link" href="/myprofile">Moje konto</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="/mymessages">Wiadomości</a>
+                <a class="nav-link" href="/mymessages"><i class="fas fa-envelope"></i></a>
             </li>
             <li class="nav-item" th:if="${newmessage > 0}">
                 <p class="badge badge-danger" th:text="${newmessage}"></p>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="/invitations">Zaproszenia</a>
+                <a class="nav-link" href="/invitations"><i class="fas fa-user-friends"></i></a>
             </li>
             <li class="nav-item" th:if="${invitations > 0}">
                 <p class="badge badge-danger" th:text="${invitations}"></p>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/notifications"><i class="fas fa-bell"></i></a>
+            </li>
+            <li class="nav-item" th:if="${notifications > 0}">
+                <p class="badge badge-danger" th:text="${notifications}"></p>
             </li>
         </ul>
         <form class="form-inline my-2 my-lg-0" th:object="${search}" th:action="@{/search}" th:method="get">
@@ -68,7 +164,7 @@
 <p></p>
 <div class="container">
     <div class="row">
-        <div class="col-md-6">
+        <div class="col-md-5">
             <h3>Moje dane</h3>
             <table class="table table-borderless" th:each="user : ${user}">
                 <tbody>
@@ -80,12 +176,44 @@
                 </tr>
                 </tbody>
             </table>
-        </div>
-        <div class="col-md-6">
+            <br>
             <h3>Moi znajomi</h3>
             <div class="chip" th:each="friend : ${friends}">
-                <img src="/images/avatar.jpg" alt="Person" width="96" height="96">
+                <img src="/images/man.png" alt="Person" width="96" height="96">
                 <a th:href="@{'/user/' + ${friend.id}}"><span th:text="${friend.username}"></span></a>
+            </div>
+        </div>
+        <div class="col-md-7">
+            <h3>Moje posty</h3>
+            <br>
+            <div th:each="post : ${posts}">
+                <div class="panel panel-white post panel-shadow">
+                    <div class="post-heading">
+                        <div class="pull-left image">
+                            <img src="/images/man.png" class="img-circle avatar" alt="user profile image">
+                        </div>
+                        <div class="pull-left meta">
+                            <div class="title h5">
+                                <a th:href="${'/user/byname/'+ post.author}"><b th:text="${post.author}"></b></a>
+                            </div>
+                            <h6 class="text-muted time" th:text="${post.date}"></h6>
+                        </div>
+                    </div>
+                    <div class="post-description">
+                        <blockquote class="blockquote mb-0">
+                            <p th:text="${post.content}"></p>
+                        </blockquote>
+                        <div class="stats">
+                            <a th:href="@{'/user/post/like/' + ${post.id}}" class="btn btn-default stat-item">
+                                <i class="fa fa-thumbs-up icon"></i><span th:if="${post.liked > 0}" th:text="${post.liked}"></span>
+                            </a>
+                            <a th:href="@{'/user/post/unlike/' + ${post.id}}" class="btn btn-default stat-item">
+                                <i class="fa fa-thumbs-down icon"></i><span th:if="${post.unliked > 0}" th:text="${post.unliked}"></span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <br>
             </div>
         </div>
     </div>

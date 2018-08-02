@@ -24,6 +24,10 @@ public class Post {
     @Column(name = "date")
     private String date;
 
+    private Integer liked = 0;
+
+    private Integer unliked = 0;
+
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
@@ -72,4 +76,19 @@ public class Post {
         this.user = user;
     }
 
+    public Integer getLiked() {
+        return liked;
+    }
+
+    public void setLiked(Integer liked) {
+        this.liked = liked;
+    }
+
+    public Integer getUnliked() {
+        return unliked;
+    }
+
+    public void setUnliked(Integer unliked) {
+        this.unliked = unliked;
+    }
 }

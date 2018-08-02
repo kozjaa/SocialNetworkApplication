@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import java.util.List;
+
 @Controller
 public class MessageController {
 
@@ -22,45 +24,66 @@ public class MessageController {
 
     @RequestMapping(value = "/user/{id}/newmessage")
     public String sendMessageToUser(@PathVariable Integer id, Model model) {
-        String user = userService.getUserById(id).getUsername();
-        String currentUsername = userService.getCurrentLoggedUser().getUsername();
-        if(user.equals(currentUsername))
-        {return "redirect:/myprofile";}
+        User currentUser = userService.getCurrentLoggedUser();
+        String newMessageUsername = userService.getUserById(id).getUsername();
+        String currentUsername = currentUser.getUsername();
+        List<Message> conversationWithUserByUsername = userService.getAllMessages(newMessageUsername);
+        List<String> myConversations = userService.getConversations();
+        Integer myNumberOfFriendsInvitations = currentUser.getInvitations();
+        Integer myNumberOfNewMessages = currentUser.getNewmessage();
+        Integer myNumberOfNotifications = currentUser.getNotification();
+        if(newMessageUsername.equals(currentUsername)) {
+            return "redirect:/myprofile";}
         else {
-            model.addAttribute("conversation", userService.getAllMessages(user));
-            model.addAttribute("user", user);
+            model.addAttribute("conversation", conversationWithUserByUsername);
+            model.addAttribute("user", newMessageUsername);
+            model.addAttribute("current", currentUsername);
             model.addAttribute("message", new Message());
-            model.addAttribute("messages", userService.getConversations());
-            model.addAttribute("username", userService.getCurrentLoggedUser().getUsername());
-            model.addAttribute("invitations", userService.getCurrentLoggedUser().getInvitations());
-            model.addAttribute("newmessage", userService.getCurrentLoggedUser().getNewmessage());
+            model.addAttribute("messages", myConversations);
+            model.addAttribute("username", currentUsername);
+            model.addAttribute("invitations", myNumberOfFriendsInvitations);
+            model.addAttribute("newmessage", myNumberOfNewMessages);
+            model.addAttribute("notifications", myNumberOfNotifications);
             return "newmessage";}
     }
 
-
     @RequestMapping(value = "/newmessage", method = RequestMethod.POST)
     public String saveMessageToUse(Message message) {
-        Integer id = userService.getUserByName(message.getReceiver()).getId();
+        String receiverName = message.getReceiver();
+        User messageReceiver = userService.getUserByName(receiverName);
+        Integer receiverId = messageReceiver.getId();
         messageService.saveMessage(message);
-        return "redirect:/user/" + id + "/newmessage";
+        return "redirect:/user/" + receiverId + "/newmessage";
     }
 
     @RequestMapping(value = "/mymessages")
     public String getMyMessages(Model model) {
-        String currentUsername = userService.getCurrentLoggedUser().getUsername();
-        User user = userService.getUserByName(currentUsername);
-        user.setNewmessage(0);
-        userService.updateUser(user);
-        model.addAttribute("messages", userService.getConversations());
-        model.addAttribute("username", userService.getCurrentLoggedUser().getUsername());
-        model.addAttribute("invitations", userService.getCurrentLoggedUser().getInvitations());
-        model.addAttribute("newmessage", userService.getCurrentLoggedUser().getNewmessage());
-        return "mymessages";
+        User currentUser = userService.getCurrentLoggedUser();
+        String currentUsername = currentUser.getUsername();
+        currentUser.setNewmessage(0);
+        userService.updateUser(currentUser);
+        List<Message> myMessages = currentUser.getMymessages();
+        Integer myNumberOfFriendsInvitations = currentUser.getInvitations();
+        Integer myNumberOfNotifications = currentUser.getNotification();
+        if (myMessages.size()>0){
+        Message lastMessage = myMessages.get(myMessages.size()-1);
+        String receiverNameFromLastMessage = lastMessage.getReceiver();
+            if (receiverNameFromLastMessage.equals(currentUsername)) {
+                Integer lastAuthorId = userService.getUserByName(lastMessage.getAuthor()).getId();
+                return "redirect:/user/" + lastAuthorId + "/newmessage"; }
+            else {
+                Integer lastReceiverId = userService.getUserByName(receiverNameFromLastMessage).getId();
+                return "redirect:/user/" + lastReceiverId + "/newmessage";}}
+            else {
+                model.addAttribute("invitations", myNumberOfFriendsInvitations);
+                model.addAttribute("username", currentUsername);
+                model.addAttribute("notifications", myNumberOfNotifications);
+                return "mymessages";}
     }
 
     @RequestMapping(value = "/conversation/{user}")
     public String getConversation(@PathVariable String user) {
-        Integer id = userService.getUserByName(user).getId();
-        return "redirect:/user/" + id + "/newmessage";
+        Integer conversationUserId = userService.getUserByName(user).getId();
+        return "redirect:/user/" + conversationUserId + "/newmessage";
     }
 }

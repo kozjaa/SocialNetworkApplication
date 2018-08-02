@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Service
 public class MessageService {
@@ -19,13 +21,16 @@ public class MessageService {
 
     @Transactional
     public void saveMessage(Message message) {
-        User user = userService.getUserByName(message.getReceiver());
-        user.setNewmessage(user.getNewmessage()+1);
-        message.setAuthor(userService.getCurrentLoggedUser().getUsername());
-        messageRepository.save(message);
         String receiverName = message.getReceiver();
         User receiver = userService.getUserByName(receiverName);
         User current = userService.getCurrentLoggedUser();
+        receiver.setNewmessage(receiver.getNewmessage()+1);
+        message.setAuthor(current.getUsername());
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd MMM yyyy HH:mm");
+        LocalDateTime dateTime = LocalDateTime.now();
+        String date = dateTime.format(formatter);
+        message.setDate(date);
+        messageRepository.save(message);
         receiver.getMymessages().add(message);
         current.getMymessages().add(message);
     }

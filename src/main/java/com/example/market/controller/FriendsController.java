@@ -4,7 +4,6 @@ import com.example.market.model.User;
 import com.example.market.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -18,34 +17,32 @@ public class FriendsController {
     public String addFriend(@PathVariable Integer id) {
         User user = userService.getUserById(id);
         userService.sendFriendsRequest(user);
-        return "redirect:/home";
+        return "redirect:/user/" + id;
     }
 
     @RequestMapping(value = "/home/addfriend/accept/{username}")
     public String acceptFriend(@PathVariable String username) {
-        User user = userService.getUserByName(username);
-        userService.addMyFriend(user);
+        User friend = userService.getUserByName(username);
+        userService.addMyFriend(friend);
         User current = userService.getCurrentLoggedUser();
         current.setInvitations(current.getInvitations()-1);
         userService.updateUser(current);
-
-        return "redirect:/myprofile";
+        return "redirect:/invitations";
     }
 
     @RequestMapping(value = "/home/addfriend/reject/{username}")
     public String rejectFriend(@PathVariable String username) {
-        User user = userService.getUserByName(username);
-        userService.rejectRequest(user);
+        User requestedUser = userService.getUserByName(username);
+        userService.rejectRequest(requestedUser);
         User current = userService.getCurrentLoggedUser();
         current.setInvitations(current.getInvitations()-1);
         userService.updateUser(current);
-
-        return "redirect:/myprofile";
+        return "redirect:/invitations";
     }
 
     @RequestMapping(value = "/home/deletefriend/{id}")
     public String deleteFriend(@PathVariable Integer id) {
         userService.deletMyFriend(id);
-        return "redirect:/myprofile";
+        return "redirect:/user/" + id;
     }
 }

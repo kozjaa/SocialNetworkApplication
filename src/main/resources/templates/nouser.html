@@ -3,12 +3,14 @@
 <head>
     <title>MyWall</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css" integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ" crossorigin="anonymous">
     <link rel="stylesheet" th:href="@{/webjars/bootstrap/4.1.0/css/bootstrap.min.css}" />
+    <link rel="stylesheet" type="text/css" href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css">
     <script th:src="@{/webjars/bootstrap/4.1.0/js/bootstrap.min.js}"></script>
+    <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
 </head>
 <body>
-<nav class="navbar navbar-expand navbar-dark" style="background:#523c86;">
+<nav class="navbar sticky-top navbar-expand navbar-dark" style="background:#523c86;">
     <a class="navbar-brand" href="/home">MyWall</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
             aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -20,16 +22,22 @@
                 <a class="nav-link" href="/myprofile">Moje konto</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="/mymessages">Wiadomości</a>
+                <a class="nav-link" href="/mymessages"><i class="fas fa-envelope"></i></a>
             </li>
             <li class="nav-item" th:if="${newmessage > 0}">
                 <p class="badge badge-danger" th:text="${newmessage}"></p>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="/invitations">Zaproszenia</a>
+                <a class="nav-link" href="/invitations"><i class="fas fa-user-friends"></i></a>
             </li>
             <li class="nav-item" th:if="${invitations > 0}">
                 <p class="badge badge-danger" th:text="${invitations}"></p>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/notifications"><i class="fas fa-bell"></i></a>
+            </li>
+            <li class="nav-item" th:if="${notifications > 0}">
+                <p class="badge badge-danger" th:text="${notifications}"></p>
             </li>
         </ul>
         <form class="form-inline my-2 my-lg-0" th:object="${search}" th:action="@{/search}" th:method="get">

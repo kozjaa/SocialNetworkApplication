@@ -1,6 +1,69 @@
 <!DOCTYPE HTML>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
+    <style>
+        form {
+    border: 3px solid #f1f1f1;
+}
+
+input[type=text], input[type=password] {
+    width: 100%;
+    padding: 12px 20px;
+    margin: 8px 0;
+    display: inline-block;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+}
+
+button {
+    background-color: #523c86;
+    color: white;
+    padding: 14px 20px;
+    margin: 8px 0;
+    border: none;
+    cursor: pointer;
+    width: 100%;
+}
+
+button:hover {
+    opacity: 0.8;
+}
+
+.cancelbtn {
+    width: auto;
+    padding: 10px 18px;
+    background-color: #f44336;
+}
+
+.imgcontainer {
+    text-align: center;
+    margin: 24px 0 12px 0;
+}
+
+img.avatar {
+    width: 40%;
+    border-radius: 50%;
+}
+
+.container {
+    padding: 16px;
+}
+
+span.psw {
+    float: right;
+    padding-top: 16px;
+}
+
+@media screen and (max-width: 300px) {
+    span.psw {
+        display: block;
+        float: none;
+    }
+    .cancelbtn {
+        width: 100%;
+    }
+}
+    </style>
     <title>Login</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 
@@ -9,23 +72,27 @@
 </head>
 <body>
 <div class="container">
-    <div class="jumbotron">
-        <h1>Zarejestruj się!</h1>
-        <p>Jeśli jeszcze nie masz założonego konta, kliknij poniżej!</p>
-        <p><a href="/register" class="btn btn-outline-warning">Zarejestruj się</a></p>
         <div th:if="${param.error}">
             <p style="color: red">Login lub hasło jest niepoprawne. Spróbuj ponownie!</p>
         </div>
         <div th:if="${param.logout}">
             <h2 style="color: green">Wylogowałeś się!</h2>
         </div>
-    </div>
-    <form class="form-inline" th:action="@{/login}" method="post">
-        <label for="username" class="mr-sm-2">Login:</label>
-        <input type="text" class="form-control mb-2 mr-sm-2" id="username" name="username" placeholder="Wpisz login">
-        <label for="password" class="mr-sm-2">Hasło:</label>
-        <input type="password" class="form-control mb-2 mr-sm-2" id="password" name="password" placeholder="Wpisz hasło">
-        <button type="submit" class="btn btn-outline-primary mb-2">Zaloguj się</button>
+    <form th:action="@{/login}" method="post">
+        <div class="container">
+
+            <label><b>Login</b></label>
+            <input type="text" placeholder="Wpisz login" id="username" name="username" required>
+
+            <label><b>Hasło</b></label>
+            <input type="password" placeholder="Wpisz hasło" id="password" name="password" required>
+
+            <button type="submit">Zaloguj</button>
+        </div>
+
+        <div class="container" style="background-color:#f1f1f1">
+            <a href="/register" class="btn btn-outline-warning">Zarejestruj się</a>
+        </div>
     </form>
 </div>
 </body>

@@ -1,6 +1,5 @@
 package com.example.market.service;
 
-
 import com.example.market.model.Role;
 import com.example.market.model.Message;
 import com.example.market.model.User;
@@ -14,11 +13,16 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
 public class UserService {
+
+    @PersistenceContext
+    private EntityManager entityManager;
 
     @Autowired
     private UserRepository userRepository;
@@ -34,9 +38,6 @@ public class UserService {
 
     @Autowired
     private MessageRepository messageRepository;
-
-    @Autowired
-    private UserRepositoryManager userRepositoryManager;
 
     public List<User> getAllUsers()
     {
@@ -80,14 +81,12 @@ public class UserService {
 
     @Transactional
     public void updateUser(User user) {
-        userRepositoryManager.saveUser(user);
+        entityManager.merge(user);
     }
 
     @Transactional
     public void addMyFriend(User user) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String username = auth.getName();
-        User currentUser = userRepository.getUserByName(username);
+        User currentUser = getCurrentLoggedUser();
         List<User> friends = currentUser.getBefriended();
         List<User> befriended = user.getBefriended();
         if (user.getUsername().equals(currentUser.getUsername()) || currentUser.getBefriended().contains(user) ||
@@ -101,76 +100,59 @@ public class UserService {
     }
 
     public List<User> getMyFriends() {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String username = auth.getName();
-        User user = userRepository.getUserByName(username);
-        List<User> friends = user.getBefriended();
-
+        User currentUser = getCurrentLoggedUser();
+        List<User> friends = currentUser.getBefriended();
+        friends.sort(Comparator.comparing(user1 -> user1.getUsername()));
         return friends;
     }
 
-
-    public List<Message> getAllMessages(String user) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String username = auth.getName();
-        User currentuser = userRepository.getUserByName(username);
+    public List<Message> getAllMessages(String username) {
+        String currentUsername = getCurrentLoggedUser().getUsername();
         List<Message> list = messageRepository.findAll();
         List<Message> newList = new ArrayList<>();
         for(Message o : list) {
-            if((o.getReceiver().equals(username) || o.getAuthor().equals(username)) && (o.getReceiver().equals(user) || o.getAuthor().equals(user))) {
-
-                newList.add(o);
-            }
-        }
+            if((o.getReceiver().equals(currentUsername) || o.getAuthor().equals(currentUsername)) && (o.getReceiver().equals(username) || o.getAuthor().equals(username))) {
+                newList.add(o); } }
         return newList;
     }
 
     @Transactional
     public void sendFriendsRequest(User user) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String username = auth.getName();
-        User currentUser = userRepository.getUserByName(username);
+        User currentUser = getCurrentLoggedUser();
+        String currentUsername = currentUser.getUsername();
         if (currentUser.getUsername().equals(user.getUsername()) || currentUser.getBefriended().contains(user)
-                || user.getBefriended().contains(currentUser) || user.getRequestFriendsUsername().contains(username)) {
+                || user.getBefriended().contains(currentUser) || user.getRequestFriendsUsername().contains(currentUsername)) {
 
         }
         else {
         user.setInvitations(user.getInvitations()+1);
-        user.getRequestFriendsUsername().add(username);}
+        user.getRequestFriendsUsername().add(currentUsername);}
     }
 
     public List<String> getAllFriendsRequests() {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String username = auth.getName();
-        User user = userRepository.getUserByName(username);
-
-        return user.getRequestFriendsUsername();
+        User currentUser = getCurrentLoggedUser();
+        List<String> friendsRequests = currentUser.getRequestFriendsUsername();
+        return friendsRequests;
     }
 
     @Transactional
     public void rejectRequest(User user) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String username = auth.getName();
-        User currentUser = userRepository.getUserByName(username);
+        User currentUser = getCurrentLoggedUser();
         currentUser.getRequestFriendsUsername().remove(user.getUsername());
     }
 
-    public Set<String> getConversations() {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        String username = auth.getName();
-        User user = userRepository.getUserByName(username);
-        List<Message> messages = user.getMymessages();
+    public List<String> getConversations() {
+        User currentUser = getCurrentLoggedUser();
+        String currentUsername = currentUser.getUsername();
+        List<Message> messages = currentUser.getMymessages();
         for(Message o : messages) {
-            if(o.getReceiver().equals(username)) {
+            if(o.getReceiver().equals(currentUsername)) {
 
-                o.setReceiver(o.getAuthor());
-            }
-        }
+                o.setReceiver(o.getAuthor()); } }
         List<String> conversations = messages.stream().map(message -> message.getReceiver()).collect(Collectors.toList());
         List<String> sortedconversations = Lists.reverse(conversations);
-        Set<String> conv = new HashSet<>(sortedconversations);
-
-        return conv;
+        List<String> list = sortedconversations.stream().distinct().collect(Collectors.toList());
+        return list;
     }
 
     @Transactional
@@ -178,8 +160,8 @@ public class UserService {
         User current = getCurrentLoggedUser();
         User user = getUserById(id);
         List<User> myFriends = current.getBefriended();
-        List<User> myFriendsuser = user.getBefriended();
+        List<User> userFriends = user.getBefriended();
         myFriends.remove(user);
-        myFriendsuser.remove(current);
+        userFriends.remove(current);
     }
 }
