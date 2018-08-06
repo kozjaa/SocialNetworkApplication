@@ -89,10 +89,9 @@ public class UserService {
         User currentUser = getCurrentLoggedUser();
         List<User> friends = currentUser.getBefriended();
         List<User> befriended = user.getBefriended();
-        if (user.getUsername().equals(currentUser.getUsername()) || currentUser.getBefriended().contains(user) ||
-                befriended.contains(currentUser)) {
 
-        }
+        if (user.getUsername().equals(currentUser.getUsername()) || currentUser.getBefriended().contains(user) ||
+                befriended.contains(currentUser)) {}
         else {
         friends.add(user);
         befriended.add(currentUser);
@@ -110,8 +109,10 @@ public class UserService {
         String currentUsername = getCurrentLoggedUser().getUsername();
         List<Message> list = messageRepository.findAll();
         List<Message> newList = new ArrayList<>();
+
         for(Message o : list) {
-            if((o.getReceiver().equals(currentUsername) || o.getAuthor().equals(currentUsername)) && (o.getReceiver().equals(username) || o.getAuthor().equals(username))) {
+            if((o.getReceiver().equals(currentUsername) || o.getAuthor().equals(currentUsername))
+                    && (o.getReceiver().equals(username) || o.getAuthor().equals(username))) {
                 newList.add(o); } }
         return newList;
     }
@@ -120,10 +121,9 @@ public class UserService {
     public void sendFriendsRequest(User user) {
         User currentUser = getCurrentLoggedUser();
         String currentUsername = currentUser.getUsername();
-        if (currentUser.getUsername().equals(user.getUsername()) || currentUser.getBefriended().contains(user)
-                || user.getBefriended().contains(currentUser) || user.getRequestFriendsUsername().contains(currentUsername)) {
 
-        }
+        if (currentUser.getUsername().equals(user.getUsername()) || currentUser.getBefriended().contains(user)
+                || user.getBefriended().contains(currentUser) || user.getRequestFriendsUsername().contains(currentUsername)) {}
         else {
         user.setInvitations(user.getInvitations()+1);
         user.getRequestFriendsUsername().add(currentUsername);}
@@ -135,20 +135,15 @@ public class UserService {
         return friendsRequests;
     }
 
-    @Transactional
-    public void rejectRequest(User user) {
-        User currentUser = getCurrentLoggedUser();
-        currentUser.getRequestFriendsUsername().remove(user.getUsername());
-    }
-
     public List<String> getConversations() {
         User currentUser = getCurrentLoggedUser();
         String currentUsername = currentUser.getUsername();
         List<Message> messages = currentUser.getMymessages();
+
         for(Message o : messages) {
             if(o.getReceiver().equals(currentUsername)) {
-
                 o.setReceiver(o.getAuthor()); } }
+
         List<String> conversations = messages.stream().map(message -> message.getReceiver()).collect(Collectors.toList());
         List<String> sortedconversations = Lists.reverse(conversations);
         List<String> list = sortedconversations.stream().distinct().collect(Collectors.toList());
@@ -163,5 +158,22 @@ public class UserService {
         List<User> userFriends = user.getBefriended();
         myFriends.remove(user);
         userFriends.remove(current);
+    }
+
+    @Transactional
+    public void acceptFriendsRequest(String username) {
+        User friend = getUserByName(username);
+        addMyFriend(friend);
+        User current = getCurrentLoggedUser();
+        current.setInvitations(current.getInvitations()-1);
+        updateUser(current);
+    }
+
+    @Transactional
+    public void rejectFriendsRequest(String username) {
+        User current = getCurrentLoggedUser();
+        current.setInvitations(current.getInvitations()-1);
+        updateUser(current);
+        current.getRequestFriendsUsername().remove(username);
     }
 }

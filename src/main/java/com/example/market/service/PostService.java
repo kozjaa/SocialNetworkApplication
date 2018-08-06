@@ -5,8 +5,6 @@ import com.example.market.model.User;
 import com.example.market.repository.PostRepository;
 import com.google.common.collect.Lists;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,6 +28,9 @@ public class PostService {
     @Autowired
     private  UserService userService;
 
+    @Autowired
+    private NotificationService notificationService;
+
     public List<Post> getMyAllPosts() {
         List<User> myfriends = userService.getMyFriends();
         List<Post> myPosts = userService.getCurrentLoggedUser().getMyposts();
@@ -39,7 +40,6 @@ public class PostService {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd MMM yyyy HH:mm");
         friendsPosts.sort(Comparator.comparing(message -> LocalDateTime.parse(message.getDate(), formatter)));
         List<Post> sortPosts = Lists.reverse(friendsPosts);
-
         return sortPosts;
     }
 
@@ -70,5 +70,59 @@ public class PostService {
     public List<Post> getMyOwnPosts(){
         List<Post> myPosts = userService.getCurrentLoggedUser().getMyposts();
         return myPosts;
+    }
+
+    @Transactional
+    public void changeLikedPost(Integer id) {
+        User currentUser = userService.getCurrentLoggedUser();
+        Post post = getPostById(id);
+        post.setLiked(post.getLiked()-1);
+        updatePost(post);
+        List<Integer> likedPosts = currentUser.getLikedPosts();
+        likedPosts.remove(id);
+        currentUser.setLikedPosts(likedPosts);
+        userService.updateUser(currentUser);;
+    }
+
+    @Transactional
+    public void likePost(Integer id) {
+        User currentUser = userService.getCurrentLoggedUser();
+        User receiver = userService.getUserByName(getPostById(id).getAuthor());
+        Post post = getPostById(id);
+        post.setLiked(post.getLiked()+1);
+        updatePost(post);
+        List<Integer> likedPosts = currentUser.getLikedPosts();
+        likedPosts.add(id);
+        currentUser.setLikedPosts(likedPosts);
+        userService.updateUser(currentUser);
+        String text = " polubił Twój post ";
+        notificationService.saveNotification(currentUser.getUsername(), post.getContent(), text, receiver);
+    }
+
+    @Transactional
+    public void changeUnlikedPost(Integer id) {
+        User currentUser = userService.getCurrentLoggedUser();
+        Post post = getPostById(id);
+        post.setUnliked(post.getUnliked()-1);
+        updatePost(post);
+        List<Integer> unlikedPosts = currentUser.getUnlikedPosts();
+        unlikedPosts.remove(id);
+        currentUser.setUnlikedPosts(unlikedPosts);
+        userService.updateUser(currentUser);
+    }
+
+    @Transactional
+    public void unlikePost(Integer id) {
+        User currentUser = userService.getCurrentLoggedUser();
+        User receiver = userService.getUserByName(getPostById(id).getAuthor());
+        Post post = getPostById(id);
+        post.setUnliked(post.getUnliked()+1);
+        updatePost(post);
+        List<Integer> unlikedPosts = currentUser.getUnlikedPosts();
+        unlikedPosts.add(id);
+        currentUser.setUnlikedPosts(unlikedPosts);
+        userService.updateUser(currentUser);
+        String text = " nie lubi Twojego postu ";
+        notificationService.saveNotification(currentUser.getUsername(), post.getContent(), text, receiver);
     }
 }

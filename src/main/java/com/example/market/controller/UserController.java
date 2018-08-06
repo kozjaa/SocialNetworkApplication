@@ -30,6 +30,7 @@ public class UserController {
         Integer myNumberOfFriendsInvitations = currentUser.getInvitations();
         Integer myNumberOfNewMessages = currentUser.getNewmessage();
         Integer myNumberOfNotifications = currentUser.getNotification();
+
         model.addAttribute("user", currentUser);
         model.addAttribute("friends", myFriends);
         model.addAttribute("username", currentUsername);
@@ -54,36 +55,16 @@ public class UserController {
         Integer myNumberOfFriendsInvitations = currentUser.getInvitations();
         Integer myNumberOfNewMessages = currentUser.getNewmessage();
         Integer myNumberOfNotifications = currentUser.getNotification();
+        boolean isRequestSent = userByIdFriendsRequestsUsernames.contains(currentUsername);
+        boolean isRequestGiven = myFriendsRequestsUsernames.contains(userByIdUsername);
+        boolean isFriend = myFriends.contains(userById);
+
         if (userByIdUsername.equals(currentUsername)) {
             return "redirect:/myprofile";}
-        else if (myFriends.contains(userById)) {
-            model.addAttribute("user", userById);
-            model.addAttribute("username", currentUsername);
-            model.addAttribute("invitations",myNumberOfFriendsInvitations);
-            model.addAttribute("newmessage", myNumberOfNewMessages);
-            model.addAttribute("friends", userByIdFriends);
-            model.addAttribute("posts", userByIdPosts);
-            model.addAttribute("notifications", myNumberOfNotifications);
-            return "friend";}
-            else if (myFriendsRequestsUsernames.contains(userByIdUsername)) {
-            model.addAttribute("user", userById);
-            model.addAttribute("username", currentUsername);
-            model.addAttribute("invitations", myNumberOfFriendsInvitations);
-            model.addAttribute("newmessage", myNumberOfNewMessages);
-            model.addAttribute("friends", userByIdFriends);
-            model.addAttribute("posts", userByIdPosts);
-            model.addAttribute("notifications", myNumberOfNotifications);
-            return "requesteduser";}
-        else if (userByIdFriendsRequestsUsernames.contains(currentUsername)){
-            model.addAttribute("user", userById);
-            model.addAttribute("username", currentUsername);
-            model.addAttribute("invitations", myNumberOfFriendsInvitations);
-            model.addAttribute("newmessage", myNumberOfNewMessages);
-            model.addAttribute("friends", userByIdFriends);
-            model.addAttribute("posts", userByIdPosts);
-            model.addAttribute("notifications", myNumberOfNotifications);
-            return "sentrequestuser"; }
         else {
+            model.addAttribute("friend", isFriend);
+            model.addAttribute("request", isRequestGiven);
+            model.addAttribute("is", isRequestSent);
             model.addAttribute("user", userById);
             model.addAttribute("username", currentUsername);
             model.addAttribute("invitations", myNumberOfFriendsInvitations);
@@ -91,16 +72,17 @@ public class UserController {
             model.addAttribute("friends", userByIdFriends);
             model.addAttribute("posts", userByIdPosts);
             model.addAttribute("notifications", myNumberOfNotifications);
-        return "user";}
+            return "user";}
     }
 
     @RequestMapping(value = "/user/byname/{name}")
     public String getUserByName(@PathVariable String name) {
         String currentUsername = userService.getCurrentLoggedUser().getUsername();
+
         if (name.equals(currentUsername)) {
             return "redirect:/myprofile"; }
         else {
-        Integer byNameUserId = userService.getUserByName(name).getId();
-        return "redirect:/user/" + byNameUserId;}
+            Integer byNameUserId = userService.getUserByName(name).getId();
+            return "redirect:/user/" + byNameUserId;}
     }
 }

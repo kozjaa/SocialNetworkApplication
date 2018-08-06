@@ -3,6 +3,7 @@ package com.example.market.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,6 +16,7 @@ public class Message {
 
     private String author;
 
+    @NotBlank
     private String content;
 
     private String receiver;

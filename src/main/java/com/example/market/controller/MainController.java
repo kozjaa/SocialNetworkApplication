@@ -81,6 +81,7 @@ public class MainController {
 
     @RequestMapping(value = "/home", method = RequestMethod.POST)
     public String addMessage(@Valid Post post, BindingResult bindingResult) {
+
         if(bindingResult.hasErrors()) {
             bindingResult.getAllErrors().forEach(error ->{
                 System.out.println(error.getObjectName() + " " + error.getDefaultMessage());
@@ -100,26 +101,16 @@ public class MainController {
         Integer myNumberOfNotifications = currentUser.getNotification();
         List<User> allUsers = userService.getAllUsers();
         User searchedUser = userService.getUserByName(username.trim());
-        if(username.trim().equals("")) {
-            model.addAttribute("username", currentUsername);
-            model.addAttribute("invitations", myNumberOfFriendsInvitations);
-            model.addAttribute("newmessage", myNumberOfNewMessages);
-            model.addAttribute("notifications", myNumberOfNotifications);
-            return "nouser"; }
-        else if (!allUsers.contains(searchedUser)){
-            model.addAttribute("user", username);
-            model.addAttribute("username", currentUsername);
-            model.addAttribute("invitations", myNumberOfFriendsInvitations);
-            model.addAttribute("newmessage", myNumberOfNewMessages);
-            model.addAttribute("notifications", myNumberOfNotifications);
-            return "nouser"; }
-        else {
-            model.addAttribute("user", searchedUser);
-            model.addAttribute("username", currentUsername);
-            model.addAttribute("invitations", myNumberOfFriendsInvitations);
-            model.addAttribute("newmessage", myNumberOfNewMessages);
-            model.addAttribute("notifications", myNumberOfNotifications);
-            return "searchresult";}
+        boolean isExist = allUsers.contains(searchedUser);
+
+        model.addAttribute("name", username);
+        model.addAttribute("exist", isExist);
+        model.addAttribute("user", searchedUser);
+        model.addAttribute("username", currentUsername);
+        model.addAttribute("invitations", myNumberOfFriendsInvitations);
+        model.addAttribute("newmessage", myNumberOfNewMessages);
+        model.addAttribute("notifications", myNumberOfNotifications);
+        return "searchresult";
     }
 
     @RequestMapping(value = "/invitations")
@@ -130,6 +121,8 @@ public class MainController {
         Integer myNumberOfFriendsInvitations = currentUser.getInvitations();
         Integer myNumberOfNewMessages = currentUser.getNewmessage();
         Integer myNumberOfNotifications = currentUser.getNotification();
+
+        model.addAttribute("size", myFriendsRequests.size());
         model.addAttribute("users", myFriendsRequests);
         model.addAttribute("username", currentUserUsername);
         model.addAttribute("invitations", myNumberOfFriendsInvitations);
@@ -148,6 +141,8 @@ public class MainController {
         Integer myNumberOfNewMessages = currentUser.getNewmessage();
         Integer myNumberOfNotifications = currentUser.getNotification();
         List<Notification> myNotifications = notificationService.getMyNotifications();
+
+        model.addAttribute("size", notificationService.getMyNotifications().size());
         model.addAttribute("username", currentUserUsername);
         model.addAttribute("invitations", myNumberOfFriendsInvitations);
         model.addAttribute("newmessage", myNumberOfNewMessages);

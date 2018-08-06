@@ -171,7 +171,11 @@
                 <tbody>
                 <tr>
                     <td><a th:href="${'/user/'+user.id} + '/newmessage'" class="btn btn-success">Wyślij wiadomość</a></td>
-                    <td><a th:href="${'/home/addfriend/'+user.id}" class="btn btn-primary">Dodaj do znajomych</a></td>
+                    <td th:if="${!is and !request and !friend}"><a th:href="${'/home/addfriend/'+user.id}" class="btn btn-primary">Dodaj do znajomych</a></td>
+                    <td th:if="${is}"><a class="btn btn-primary disabled">Wysłano zaproszenie</a></td>
+                    <td th:if="${request}"><a th:href="${'/home/addfriend/accept/'+ user.username}" class="btn btn-primary">Akceptuj</a></td>
+                    <td th:if="${request}"><a th:href="${'/home/addfriend/reject/'+ user.username}" class="btn btn-danger">Odrzuć</a></td>
+                    <td  th:if="${friend}"><a th:href="${'/home/deletefriend/'+user.id}" class="btn btn-danger">Usuń ze znajomych</a></td>
                 </tr>
                 </tbody>
             </table>

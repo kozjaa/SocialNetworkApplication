@@ -22,21 +22,13 @@ public class FriendsController {
 
     @RequestMapping(value = "/home/addfriend/accept/{username}")
     public String acceptFriend(@PathVariable String username) {
-        User friend = userService.getUserByName(username);
-        userService.addMyFriend(friend);
-        User current = userService.getCurrentLoggedUser();
-        current.setInvitations(current.getInvitations()-1);
-        userService.updateUser(current);
+        userService.acceptFriendsRequest(username);
         return "redirect:/invitations";
     }
 
     @RequestMapping(value = "/home/addfriend/reject/{username}")
     public String rejectFriend(@PathVariable String username) {
-        User requestedUser = userService.getUserByName(username);
-        userService.rejectRequest(requestedUser);
-        User current = userService.getCurrentLoggedUser();
-        current.setInvitations(current.getInvitations()-1);
-        userService.updateUser(current);
+        userService.rejectFriendsRequest(username);
         return "redirect:/invitations";
     }
 

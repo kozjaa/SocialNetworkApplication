@@ -7,10 +7,12 @@ import com.example.market.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @Controller
@@ -32,9 +34,13 @@ public class MessageController {
         Integer myNumberOfFriendsInvitations = currentUser.getInvitations();
         Integer myNumberOfNewMessages = currentUser.getNewmessage();
         Integer myNumberOfNotifications = currentUser.getNotification();
+        List<Message> myMessages = currentUser.getMymessages();
+        boolean isNull = true;
+
         if(newMessageUsername.equals(currentUsername)) {
             return "redirect:/myprofile";}
         else {
+            model.addAttribute("empty", isNull);
             model.addAttribute("conversation", conversationWithUserByUsername);
             model.addAttribute("user", newMessageUsername);
             model.addAttribute("current", currentUsername);
@@ -48,12 +54,18 @@ public class MessageController {
     }
 
     @RequestMapping(value = "/newmessage", method = RequestMethod.POST)
-    public String saveMessageToUse(Message message) {
+    public String saveMessageToUse(@Valid Message message, BindingResult bindingResult) {
         String receiverName = message.getReceiver();
-        User messageReceiver = userService.getUserByName(receiverName);
-        Integer receiverId = messageReceiver.getId();
-        messageService.saveMessage(message);
-        return "redirect:/user/" + receiverId + "/newmessage";
+        Integer receiverId = userService.getUserByName(receiverName).getId();
+
+        if(bindingResult.hasErrors()) {
+            bindingResult.getAllErrors().forEach(error ->{
+                System.out.println(error.getObjectName() + " " + error.getDefaultMessage());
+            });
+            return "redirect:/user/" + receiverId + "/newmessage";}
+        else {
+            messageService.saveMessage(message);
+            return "redirect:/user/" + receiverId + "/newmessage";}
     }
 
     @RequestMapping(value = "/mymessages")
@@ -65,20 +77,25 @@ public class MessageController {
         List<Message> myMessages = currentUser.getMymessages();
         Integer myNumberOfFriendsInvitations = currentUser.getInvitations();
         Integer myNumberOfNotifications = currentUser.getNotification();
+        boolean isNull = myMessages.size()>0;
+
         if (myMessages.size()>0){
-        Message lastMessage = myMessages.get(myMessages.size()-1);
-        String receiverNameFromLastMessage = lastMessage.getReceiver();
+            Message lastMessage = myMessages.get(myMessages.size()-1);
+            String receiverNameFromLastMessage = lastMessage.getReceiver();
+
             if (receiverNameFromLastMessage.equals(currentUsername)) {
                 Integer lastAuthorId = userService.getUserByName(lastMessage.getAuthor()).getId();
                 return "redirect:/user/" + lastAuthorId + "/newmessage"; }
-            else {
+                else {
                 Integer lastReceiverId = userService.getUserByName(receiverNameFromLastMessage).getId();
                 return "redirect:/user/" + lastReceiverId + "/newmessage";}}
-            else {
-                model.addAttribute("invitations", myNumberOfFriendsInvitations);
-                model.addAttribute("username", currentUsername);
-                model.addAttribute("notifications", myNumberOfNotifications);
-                return "mymessages";}
+
+        else {
+            model.addAttribute("empty", isNull);
+            model.addAttribute("invitations", myNumberOfFriendsInvitations);
+            model.addAttribute("username", currentUsername);
+            model.addAttribute("notifications", myNumberOfNotifications);
+            return "newmessage";}
     }
 
     @RequestMapping(value = "/conversation/{user}")

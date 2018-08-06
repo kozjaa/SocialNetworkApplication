@@ -22,23 +22,6 @@ public class NotificationService {
     @Autowired
     private UserService userService;
 
-    @Transactional
-    public void saveLikeNotification(String author, String post, User receiver){
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd MMM yyyy HH:mm");
-        LocalDateTime dateTime = LocalDateTime.now();
-        String date = dateTime.format(formatter);
-        Notification notification = new Notification();
-        notification.setAuthor(author);
-        notification.setPost(post);
-        notification.setUser(receiver);
-        notification.setContent(" polubił Twój post ");
-        notification.setDate(date);
-        notificationRepository.save(notification);
-        receiver.getNotifications().add(notification);
-        receiver.setNotification(receiver.getNotification()+1);
-        userService.updateUser(receiver);
-    }
-
     public List<Notification> getMyNotifications(){
         User user = userService.getCurrentLoggedUser();
         List<Notification> list = user.getNotifications();
@@ -49,7 +32,7 @@ public class NotificationService {
     }
 
     @Transactional
-    public void saveUnlikeNotification(String author, String post, User receiver) {
+    public void saveNotification(String author, String post, String text, User receiver) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd MMM yyyy HH:mm");
         LocalDateTime dateTime = LocalDateTime.now();
         String date = dateTime.format(formatter);
@@ -57,7 +40,7 @@ public class NotificationService {
         notification.setAuthor(author);
         notification.setPost(post);
         notification.setUser(receiver);
-        notification.setContent(" nie lubi Twojego postu ");
+        notification.setContent(text);
         notification.setDate(date);
         notificationRepository.save(notification);
         receiver.getNotifications().add(notification);

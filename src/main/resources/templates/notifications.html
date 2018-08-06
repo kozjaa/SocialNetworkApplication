@@ -58,7 +58,9 @@
 <div class="container">
     <div class="row">
         <div class="col-md-10">
-            <div class="alert alert-info" th:each="note : ${notifications}">
+            <h3 th:if="${size > 0}"> Powiadomienia</h3>
+            <h3 th:if="${size < 1}"> Brak powiadomień</h3>
+            <div th:if="${size > 0}" class="alert alert-info" th:each="note : ${notifications}">
                 <a th:href="${'/user/byname/'+ note.author}"><strong th:text="${note.author}"></strong></a><span th:text="${note.content}"></span><a href="/myprofile" class="alert-link" th:text="${note.post}"></a>.
             </div>
         </div>

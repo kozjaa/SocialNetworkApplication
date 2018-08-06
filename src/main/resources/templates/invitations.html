@@ -58,8 +58,9 @@
 <div class="container">
     <div class="row">
         <div class="col-md-10">
-            <h3>Zaproszenia do znajomych</h3>
-            <ul class="list-unstyled" th:each="user : ${users}">
+            <h3 th:if="${size > 0}">Zaproszenia do znajomych</h3>
+            <h3 th:if="${size < 1}">Brak zaproszeń do znajomych</h3>
+            <ul th:if="${size > 0}" class="list-unstyled" th:each="user : ${users}">
              <li><div class="chip">
                 <img src="/images/man.png" alt="Person" width="96" height="96">
                 <a th:href="${'/user/byname/'+ user}"><span th:text="${user}"></span></a>
