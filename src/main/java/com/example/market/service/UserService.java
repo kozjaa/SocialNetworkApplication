@@ -20,22 +20,16 @@ import java.util.stream.Collectors;
 
 @Service
 public class UserService {
-
     @PersistenceContext
     private EntityManager entityManager;
-
     @Autowired
     private UserRepository userRepository;
-
     @Autowired
     private RoleRepository roleRepository;
-
     @Autowired
     private BCryptPasswordEncoder passwordEncoder;
-
     @Autowired
     private SessionRegistry sessionRegistry;
-
     @Autowired
     private MessageRepository messageRepository;
 
@@ -53,6 +47,12 @@ public class UserService {
         List<User> users =userRepository.findAll();
         List<String> allUsernames = users.stream().map(user1 -> user1.getUsername()).collect(Collectors.toList());
         return allUsernames;
+    }
+
+    public List<User> searchUsersByName(String username) {
+        List<User> users = userRepository.findByUsernameContainingIgnoreCase(username);
+        users.sort(Comparator.comparing(user1 -> user1.getUsername()));
+        return users;
     }
 
     public User getUserByName(String name)

@@ -1,6 +1,5 @@
 package com.example.market.model;
 
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.persistence.*;
@@ -11,50 +10,35 @@ import java.util.List;
 @Entity
 @Table(name = "users")
 public class User {
-
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
-
     @Column(name = "username")
     @NotBlank
     private String username;
-
     @Column(name = "password")
     @NotBlank
     private String password;
-
     @Transient
     private String repeatedPassword;
-
     private Integer newmessage = 0;
-
     private Integer invitations = 0;
-
     private Integer notification = 0;
-
     @ElementCollection
     private List<Integer> likedPosts;
-
     @ElementCollection
     private List<Integer> unlikedPosts;
-
     @Column(name = "enabled")
     private boolean enabled = true;
-
     @Column(name = "email")
     @NotBlank
     private String email;
-
     @ElementCollection
     private List<String> requestFriendsUsername;
-
     @OneToMany(mappedBy = "user")
     private List<Post> myposts;
-
     @OneToMany(mappedBy = "user")
     private List<Notification> notifications;
-
     @JsonIgnore
     @JoinTable(
             name = "friendsmessages" , joinColumns = {@JoinColumn(name = "id_user")},
@@ -62,11 +46,9 @@ public class User {
     )
     @ManyToMany
     private List<Message> mymessages = new ArrayList<>();
-
     @JsonIgnore
     @ManyToMany(mappedBy = "befriended")
     private List<User> friends;
-
     @JsonIgnore
     @JoinTable(
             name = "friends", joinColumns = {@JoinColumn(name = "id_user")},

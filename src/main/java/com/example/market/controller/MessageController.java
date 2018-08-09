@@ -17,10 +17,8 @@ import java.util.List;
 
 @Controller
 public class MessageController {
-
     @Autowired
     private UserService userService;
-
     @Autowired
     private MessageService messageService;
 

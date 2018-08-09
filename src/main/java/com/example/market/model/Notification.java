@@ -4,19 +4,13 @@ import javax.persistence.*;
 
 @Entity
 public class Notification {
-
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
-
     private String date;
-
     private String content;
-
     private String author;
-
     private String post;
-
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;

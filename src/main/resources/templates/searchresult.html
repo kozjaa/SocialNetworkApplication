@@ -60,10 +60,9 @@
 
     </div>
     <div class="col-md-8">
-        <h3 th:if="${exist}" th:text="'Wyniki wyszukiwania dla ' + ${user.username} + ' : '"></h3>
-        <h3 th:if="${!exist}" th:text="'Użytkownik o nazwie ' + ${name} + ' nie istnieje.'"></h3>
+        <h3 th:text="'Wyniki wyszukiwania dla ' + ${name} + ' : '"></h3>
         <br>
-        <div th:if="${exist}" class="chip" th:each="user : ${user}">
+        <div class="chip" th:each="user : ${user}">
             <img src="/images/man.png" alt="Person" width="96" height="96">
             <a th:href="@{'/user/' + ${user.id}}"><span th:text="${user.username}"></span></a>
         </div>

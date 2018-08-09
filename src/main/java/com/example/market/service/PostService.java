@@ -18,16 +18,12 @@ import java.util.stream.Collectors;
 
 @Service
 public class PostService {
-
     @PersistenceContext
     private EntityManager entityManager;
-
     @Autowired
     private PostRepository postRepository;
-
     @Autowired
     private  UserService userService;
-
     @Autowired
     private NotificationService notificationService;
 

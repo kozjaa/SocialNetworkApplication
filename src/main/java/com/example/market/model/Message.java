@@ -9,20 +9,14 @@ import java.util.List;
 
 @Entity
 public class Message {
-
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
-
     private String author;
-
     @NotBlank
     private String content;
-
     private String receiver;
-
     private String date;
-
     @JsonIgnore
     @ManyToMany(mappedBy = "mymessages")
     private List<User> myusers = new ArrayList<>();

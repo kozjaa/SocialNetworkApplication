@@ -12,10 +12,8 @@ import java.time.format.DateTimeFormatter;
 
 @Service
 public class MessageService {
-
     @Autowired
     private MessageRepository messageRepository;
-
     @Autowired
     private UserService userService;
 

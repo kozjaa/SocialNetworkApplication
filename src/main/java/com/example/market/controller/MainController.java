@@ -20,13 +20,10 @@ import java.util.*;
 
 @Controller
 public class MainController {
-
     @Autowired
     private PostService postService;
-
     @Autowired
     private UserService userService;
-
     @Autowired
     private NotificationService notificationService;
 
@@ -99,13 +96,10 @@ public class MainController {
         Integer myNumberOfFriendsInvitations = currentUser.getInvitations();
         Integer myNumberOfNewMessages = currentUser.getNewmessage();
         Integer myNumberOfNotifications = currentUser.getNotification();
-        List<User> allUsers = userService.getAllUsers();
-        User searchedUser = userService.getUserByName(username.trim());
-        boolean isExist = allUsers.contains(searchedUser);
+        List<User> searchedUsers = userService.searchUsersByName(username.trim());
 
         model.addAttribute("name", username);
-        model.addAttribute("exist", isExist);
-        model.addAttribute("user", searchedUser);
+        model.addAttribute("user", searchedUsers);
         model.addAttribute("username", currentUsername);
         model.addAttribute("invitations", myNumberOfFriendsInvitations);
         model.addAttribute("newmessage", myNumberOfNewMessages);

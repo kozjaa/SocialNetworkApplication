@@ -9,25 +9,18 @@ import javax.validation.constraints.NotBlank;
 @Table(name = "posts")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Post {
-
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
-
     @Column(name = "author")
     private String author;
-
     @Column(name = "content")
     @NotBlank
     private String content;
-
     @Column(name = "date")
     private String date;
-
     private Integer liked = 0;
-
     private Integer unliked = 0;
-
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
