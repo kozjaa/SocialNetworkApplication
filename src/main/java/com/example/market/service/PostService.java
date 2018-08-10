@@ -26,9 +26,11 @@ public class PostService {
     private  UserService userService;
     @Autowired
     private NotificationService notificationService;
+    @Autowired
+    private FriendService friendService;
 
     public List<Post> getMyAllPosts() {
-        List<User> myfriends = userService.getMyFriends();
+        List<User> myfriends = friendService.getMyFriends();
         List<Post> myPosts = userService.getCurrentLoggedUser().getMyposts();
         List<List<Post>> lists = myfriends.stream().map(user -> user.getMyposts()).collect(Collectors.toList());
         List<Post> friendsPosts = lists.stream().flatMap(List::stream).collect(Collectors.toList());
@@ -65,7 +67,10 @@ public class PostService {
 
     public List<Post> getMyOwnPosts(){
         List<Post> myPosts = userService.getCurrentLoggedUser().getMyposts();
-        return myPosts;
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd MMM yyyy HH:mm");
+        myPosts.sort(Comparator.comparing(message -> LocalDateTime.parse(message.getDate(), formatter)));
+        List<Post> sortPosts = Lists.reverse(myPosts);
+        return sortPosts;
     }
 
     @Transactional
@@ -120,5 +125,14 @@ public class PostService {
         userService.updateUser(currentUser);
         String text = " nie lubi Twojego postu ";
         notificationService.saveNotification(currentUser.getUsername(), post.getContent(), text, receiver);
+    }
+
+    public List<Post> getPostsByUserId(Integer id) {
+        User user = userService.getUserById(id);
+        List<Post> posts = user.getMyposts();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd MMM yyyy HH:mm");
+        posts.sort(Comparator.comparing(message -> LocalDateTime.parse(message.getDate(), formatter)));
+        List<Post> sortPosts = Lists.reverse(posts);
+        return sortPosts;
     }
 }

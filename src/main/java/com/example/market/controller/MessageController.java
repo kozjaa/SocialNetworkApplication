@@ -27,8 +27,8 @@ public class MessageController {
         User currentUser = userService.getCurrentLoggedUser();
         String newMessageUsername = userService.getUserById(id).getUsername();
         String currentUsername = currentUser.getUsername();
-        List<Message> conversationWithUserByUsername = userService.getAllMessages(newMessageUsername);
-        List<String> myConversations = userService.getConversations();
+        List<Message> conversationWithUserByUsername = messageService.getAllMessages(newMessageUsername);
+        List<String> myConversations = messageService.getConversations();
         Integer myNumberOfFriendsInvitations = currentUser.getInvitations();
         Integer myNumberOfNewMessages = currentUser.getNewmessage();
         Integer myNumberOfNotifications = currentUser.getNotification();

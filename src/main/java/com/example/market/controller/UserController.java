@@ -2,6 +2,7 @@ package com.example.market.controller;
 
 import com.example.market.model.Post;
 import com.example.market.model.User;
+import com.example.market.service.FriendService;
 import com.example.market.service.PostService;
 import com.example.market.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,12 +19,14 @@ public class UserController {
     private UserService userService;
     @Autowired
     private PostService postService;
+    @Autowired
+    private FriendService friendService;
 
     @RequestMapping(value = "/myprofile")
     public String getMyProfile(Model model) {
         String currentUsername = userService.getCurrentLoggedUser().getUsername();
         User currentUser = userService.getCurrentLoggedUser();
-        List<User> myFriends = userService.getMyFriends();
+        List<User> myFriends = friendService.getMyFriends();
         List<Post> myPosts = postService.getMyOwnPosts();
         Integer myNumberOfFriendsInvitations = currentUser.getInvitations();
         Integer myNumberOfNewMessages = currentUser.getNewmessage();
@@ -45,9 +48,9 @@ public class UserController {
         String userByIdUsername = userById.getUsername();
         User currentUser = userService.getCurrentLoggedUser();
         String currentUsername = currentUser.getUsername();
-        List<User> myFriends = userService.getMyFriends();
+        List<User> myFriends = friendService.getMyFriends();
         List<User> userByIdFriends = userById.getBefriended();
-        List<Post> userByIdPosts = userById.getMyposts();
+        List<Post> userByIdPosts = postService.getPostsByUserId(id);
         List<String> myFriendsRequestsUsernames = currentUser.getRequestFriendsUsername();
         List<String> userByIdFriendsRequestsUsernames = userById.getRequestFriendsUsername();
         Integer myNumberOfFriendsInvitations = currentUser.getInvitations();

@@ -4,6 +4,7 @@ package com.example.market.controller;
 import com.example.market.model.Notification;
 import com.example.market.model.Post;
 import com.example.market.model.User;
+import com.example.market.service.FriendService;
 import com.example.market.service.NotificationService;
 import com.example.market.service.PostService;
 import com.example.market.service.UserService;
@@ -26,6 +27,8 @@ public class MainController {
     private UserService userService;
     @Autowired
     private NotificationService notificationService;
+    @Autowired
+    private FriendService friendService;
 
     @RequestMapping(value = "/register")
     public String registerUser(Model model) {
@@ -61,7 +64,7 @@ public class MainController {
         List<Post> myAllPosts = postService.getMyAllPosts();
         Integer currentUserId = currentUser.getId();
         String currentUsername = currentUser.getUsername();
-        List<String> requestFriendsUsersnames = userService.getAllFriendsRequests();
+        List<String> requestFriendsUsersnames = friendService.getAllFriendsRequests();
         Integer myNumberOfFriendsInvitations = currentUser.getInvitations();
         Integer myNumberOfNewMessages = currentUser.getNewmessage();
         Integer myNumberOfNotifications = currentUser.getNotification();
@@ -111,7 +114,7 @@ public class MainController {
     public String getInvitations(Model model) {
         User currentUser = userService.getCurrentLoggedUser();
         String currentUserUsername = currentUser.getUsername();
-        List<String> myFriendsRequests = userService.getAllFriendsRequests();
+        List<String> myFriendsRequests = friendService.getAllFriendsRequests();
         Integer myNumberOfFriendsInvitations = currentUser.getInvitations();
         Integer myNumberOfNewMessages = currentUser.getNewmessage();
         Integer myNumberOfNotifications = currentUser.getNotification();
